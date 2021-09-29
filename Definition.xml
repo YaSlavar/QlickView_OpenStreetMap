@@ -1,14 +1,15 @@
-<ExtensionObject xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="Definition.xsd" Label="OpenStreetMap" Description="OpenStreetMap" PageHeight="200000">
-	<Dimension Label="Широта" Initial="" DropTarget="Latitude"/>
-	<Dimension Label="Долгота" Initial="" DropTarget="Longitude"/>
-	<Dimension Label="Подписи к маркерам" Initial="" DropTarget="MarkerDescription"/>
-	<Measurement Label="Заголовок карты" Initial="Города"/>
-	<!--<Measurement Label="Подпись измерений" Initial="Sum(lat)"/>-->
-	<!-- <Measurement Label="Custom Marker URL" Initial="='url goes here'" Expression="='url goes here'"/> -->
-	<!-- <Text Label="Pop-up labels" Type="checkbox" Initial="" Expression="1"/> -->
-	<!-- <Text Label="Grid Size" Type="text" Initial="" Expression="30"/> -->
-	 <Text Label="Max zoom" Type="text" Initial="" Expression="15"/>
-	<!-- <Text Label="Single Cluster Style" Type="checkbox" Initial="" Expression="1"/> -->
-	<Initiate Name="Chart.Dimension.0.SuppressNull" value="1"/>
-	<Initiate Name="Chart.Dimension.1.SuppressNull" value="1"/>
+<ExtensionObject xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="Definition.xsd"
+                 Label="OpenStreetMap" Description="Расширение для работы с картой OpenStreetMap" PageHeight="200000">
+    <Dimension Label="Широта" Initial="" DropTarget="Latitude"/>
+    <Dimension Label="Долгота" Initial="" DropTarget="Longitude"/>
+    <Dimension Label="Подписи к маркерам" Initial="" DropTarget="MarkerDescription"/>
+    <Measurement Label="Заголовок карты" Initial="Города"/>
+    <!--<Measurement Label="Подпись измерений" Initial="Sum(lat)"/>-->
+    <!-- <Measurement Label="Custom Marker URL" Initial="='url goes here'" Expression="='url goes here'"/> -->
+    <!-- <Text Label="Pop-up labels" Type="checkbox" Initial="" Expression="1"/> -->
+    <!-- <Text Label="Grid Size" Type="text" Initial="" Expression="30"/> -->
+    <Text Label="Max zoom" Type="text" Initial="" Expression="15"/>
+    <!-- <Text Label="Single Cluster Style" Type="checkbox" Initial="" Expression="1"/> -->
+    <Initiate Name="Chart.Dimension.0.SuppressNull" value="1"/>
+    <Initiate Name="Chart.Dimension.1.SuppressNull" value="1"/>
 </ExtensionObject>
