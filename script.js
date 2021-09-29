@@ -120,12 +120,12 @@ function init_map() {
                 strokeWidth: 1,
             };
 
-            //Создаем слой для точек. В свойстве styleMap указываем как отображать в обычном случае. Свойство select будет применено после выбора элемента.
-            var vector = new OpenLayers.Layer.Vector("Точки на карте", {
+            // Создаем слой для точек.
+            let vector = new OpenLayers.Layer.Vector("Точки на карте", {
                 eventListeners: {
                     'featureselected': function (evt) {
-                        var feature = evt.feature;
-                        var popup = new OpenLayers.Popup.FramedCloud("popup",
+                        let feature = evt.feature;
+                        let popup = new OpenLayers.Popup.FramedCloud("popup",
                             OpenLayers.LonLat.fromString(feature.geometry.toShortString()),
                             null,
                             "<div style='font-size:.8em'>" + feature.attributes.text + "</div>",
@@ -136,7 +136,7 @@ function init_map() {
                         map.addPopup(popup);
                     },
                     'featureunselected': function (evt) {
-                        var feature = evt.feature;
+                        let feature = evt.feature;
                         map.removePopup(feature.popup);
                         feature.popup.destroy();
                         feature.popup = null;
@@ -147,19 +147,17 @@ function init_map() {
 
             map.addLayer(vector);
 
+            // Добавление дочек на карту
             for (let i = 0, k = _this.Data.Rows.length; i < k; i++) {
+
                 let row = _this.Data.Rows[i];
                 let latitude = parseFloat(row[0].text);
                 let longitude = parseFloat(row[1].text);
-
-                // alert(row[2].text);
-                // break;
 
                 if (!isNaN(latitude) && latitude !== '' && latitude <= 90 && latitude >= -90 && !isNaN(longitude) && longitude !== '' && longitude <= 180 && latitude >= -180) {
                     addPoint(longitude, latitude, row[2].text, i);
                 }
             }
-
 
             let selectControl = new OpenLayers.Control.SelectFeature([map.layers[1]]);
             map.addControls([selectControl],
@@ -172,9 +170,8 @@ function init_map() {
 
             selectControl.activate();
 
-
             function addPoint(lon, lat, title, ident) {
-
+                /* Метод добавления точки на карту */
                 let point = new OpenLayers.Geometry.Point(parseFloat(lon), parseFloat(lat));
                 point.transform(new OpenLayers.Projection(DISPLAY_PROJECTION), new OpenLayers.Projection(PROJECTION));
                 map.layers[1].addFeatures(new OpenLayers.Feature.Vector(point, {
