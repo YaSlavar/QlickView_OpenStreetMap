@@ -3,6 +3,9 @@
     <Dimension Label="Широта" Initial="" DropTarget="Latitude"/>
     <Dimension Label="Долгота" Initial="" DropTarget="Longitude"/>
     <Dimension Label="Подписи к маркерам" Initial="" DropTarget="MarkerDescription"/>
+    <Dimension Label="Названия слоев" Initial="" DropTarget="LayerDescription"/>
+    <Dimension Label="Цвет точек слоя" Initial="" DropTarget="LayerPointColor"/>
+
     <Measurement Label="Заголовок карты" Initial="Города"/>
     <!--<Measurement Label="Подпись измерений" Initial="Sum(lat)"/>-->
     <!-- <Measurement Label="Custom Marker URL" Initial="='url goes here'" Expression="='url goes here'"/> -->
