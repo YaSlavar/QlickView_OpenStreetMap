@@ -51,11 +51,6 @@ function init_map() {
             let PROJECTION = "EPSG:3857";
             let DISPLAY_PROJECTION = "EPSG:4326";
 
-            // let popupLabels = _this.Layout.Text0.text;
-            // let gSize = _this.Layout.Text1.text;
-            // let mZoom = _this.Layout.Text2.text;
-            // let disableStyles = _this.Layout.Text3.text;
-
             // Создание контейнера для отображения карты
             if (this.Element.children.length === 0) {
 
@@ -114,8 +109,40 @@ function init_map() {
             map.setCenter(new OpenLayers.LonLat(point0.x, point0.y), 9);
 
             // Событие нажатия на элемент карты
-            window.oncvlrowclick = function(rowlx) {
-                _this.Data.SelectRow(rowlx)
+            window.oncvlrowclick = function(longitude, latitude) {
+                _this.Data.SearchColumn(1, longitude, true)
+                _this.Data.SearchColumn(0, latitude, true)
+            }
+
+            // Массив слоёв
+            let layer_array = [];
+
+            // Функции обработки событий для слоёв
+            let layerListeners = {
+                // Обработка нажатия на точку на карте
+                'featureselected': function (evt) {
+                    console.log(evt);
+                    let feature = evt.feature;
+                    let popup = new OpenLayers.Popup.FramedCloud("popup" + evt.object.name,
+                        OpenLayers.LonLat.fromString(feature.geometry.toShortString()),
+                        null,
+                        "<div style='font-size:.8em' onclick='oncvlrowclick(" +
+                            feature.attributes.longitude + ', ' +
+                            feature.attributes.latitude
+                             + ")'>" + feature.attributes.text + "</div>",
+                        null,
+                        true
+                    );
+                    feature.popup = popup;
+                    map.addPopup(popup);
+                },
+                // Обработка закрытия popup окна
+                'featureunselected': function (evt) {
+                    let feature = evt.feature;
+                    map.removePopup(feature.popup);
+                    feature.popup.destroy();
+                    feature.popup = null;
+                }
             }
 
             // Добавление точек на карту
@@ -125,26 +152,24 @@ function init_map() {
 
                 let if_added_layer = false;
 
+                // Поиск нового слоя среди созданных слоёв
                 $(map.layers).each(function (index){
                     if ( map.layers[index]['name'] === row[3].text) {
+                        // Если слой не создан
                         if_added_layer = true;
                     }
                 });
 
-                console.log(if_added_layer);
-
-                // Если слой не создан, создаем, применяем стили
+                // Если слой не создан
                 if (if_added_layer ===  false) {
 
                     // Стили точек
-                    // Если цвет не задан, генерируем случайный
+                    // Если цвет не задан, генерация случайного
                     let point_color = getRandomColor();
-                    console.log(point_color);
+
                     if (row[4].text.charAt(0) == '#') {
                         point_color = row[4].text;
                     }
-
-                    console.log(point_color);
 
                     let stylePoint= {
                         pointRadius: 5,
@@ -153,34 +178,17 @@ function init_map() {
                         fillColor: point_color
                     };
 
-                    // Создаем слой для точек
+                    // Создание слоя для точек
                     let layer = new OpenLayers.Layer.Vector(row[3].text, {
-                        eventListeners: {
-                            'featureselected': function (evt) {
-                                let feature = evt.feature;
-                                let popup = new OpenLayers.Popup.FramedCloud("popup",
-                                    OpenLayers.LonLat.fromString(feature.geometry.toShortString()),
-                                    null,
-                                    "<div style='font-size:.8em' onclick='oncvlrowclick(" + i + ")'>" + feature.attributes.text + "</div>",
-                                    null,
-                                    true
-                                );
-                                feature.popup = popup;
-                                map.addPopup(popup);
-                            },
-                            'featureunselected': function (evt) {
-                                let feature = evt.feature;
-                                map.removePopup(feature.popup);
-                                feature.popup.destroy();
-                                feature.popup = null;
-                            }
-                        },
+                        eventListeners: layerListeners,
                         style: stylePoint
                     });
 
                     map.addLayer(layer);
+                    layer_array.push(layer);
                 }
 
+                // Получение координат точки
                 let latitude = parseFloat(row[0].text);
                 let longitude = parseFloat(row[1].text);
 
@@ -188,17 +196,21 @@ function init_map() {
 
                     let layer_index = 0;
 
+                    // Поиск индекса слоя для добавления на него точки
                     $(map.layers).each(function (index){
                         if ( map.layers[index]['name'] === row[3].text) {
                            layer_index = index;
                         }
                     });
 
+                    // Добавление точки на слой
                     addPoint(longitude, latitude, row[2].text, i, layer_index);
                 }
             }
 
-            let selectControl = new OpenLayers.Control.SelectFeature([map.layers[1]]);
+            // Регистрация и активация событий слоёв
+            let selectControl = new OpenLayers.Control.SelectFeature(layer_array);
+
             map.addControls([selectControl],
                 {
                     clickout: true, toggle: false,
@@ -210,8 +222,6 @@ function init_map() {
             selectControl.activate();
 
 
-
-
             function addPoint(lon, lat, title, ident, layer_index) {
                 /* Метод добавления точки на карту */
                 let point = new OpenLayers.Geometry.Point(parseFloat(lon), parseFloat(lat));
@@ -219,6 +229,8 @@ function init_map() {
                 map.layers[layer_index].addFeatures(new OpenLayers.Feature.Vector(point, {
                     label: title,
                     name: title,
+                    longitude: lon,
+                    latitude: lat,
                     text: title,
                     PointId: ident,
                 }));
